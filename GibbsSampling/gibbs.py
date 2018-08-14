@@ -3,6 +3,9 @@ from scipy.stats import norm
 from scipy.stats import gamma
 from matplotlib import pyplot as plt
 import numpy as np
+from numpy import random
+
+random.seed(10)
 
 ### simulate data
 ### simulate from Normal mean 100, st. dev 30.
@@ -35,7 +38,7 @@ def cond_post_prec(y, prior_prec_a, prior_prec_b, mu):
 
 	return(draw)
 
-## gibbs sample...input prior hyperparameters and initial value and 
+## gibbs sampler...input prior hyperparameters and initial value and 
 ## number of Gibbs iterations to run.
 def gibbs_mcmc(iter=1000, prec_init=.5, 
 	prior_mu_mean=0, prior_mu_phi=100,
@@ -58,12 +61,20 @@ def gibbs_mcmc(iter=1000, prec_init=.5,
 
 	return prec_shell, mu_shell
 
+## run Gibbs Sampler
 prec_shell, mu_shell = gibbs_mcmc(iter=1000, prec_init=.000001)
 
-## plot MCMC chains.
-
+## plot MCMC chains along with true values.
+plt.subplot(1,2,1)
 plt.plot(1/(np.sqrt(prec_shell[100:1000])))
-plt.show()
+plt.axhline(y=30, xmin=0, xmax=900, linewidth=2, color = 'r')
+plt.title('Traceplot for Std. Deviation')
 
+plt.subplot(1,2,2)
 plt.plot(mu_shell[100:1000])
+plt.axhline(y=100, xmin=0, xmax=900, linewidth=2, color = 'r')
+
+plt.title('Traceplot for Mean')
+plt.savefig('traceplots.png')
+
 plt.show()
